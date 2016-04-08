@@ -66,6 +66,11 @@ def duplicate_resource(error):
     return make_response(jsonify({'error': 'duplicate resource id'}), 409)
 
 
+@app.errorhandler(500)
+def internal_server_error(error):
+    return make_response(jsonify({'error': 'internal server error'}), 500)
+
+
 @app.route('/blog/api/v1.0/blogs', methods=['GET'])
 def get_blogs():
     blogs = []

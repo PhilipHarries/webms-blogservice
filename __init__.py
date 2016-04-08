@@ -6,7 +6,7 @@ import datetime
 
 app = Flask(__name__)
 
-handler = RotatingFileHandler('logs/blogservice.log',maxBytes=40960,backupCount=3)
+handler = RotatingFileHandler('logs/blogservice.log', maxBytes=40960, backupCount=3)
 handler.setLevel(logging.DEBUG)
 app.logger.addHandler(handler)
 log = logging.getLogger('werkzeug')
@@ -17,10 +17,13 @@ log.addHandler(handler)
 mongo = PyMongo(app)
 
 debug = True
+
+
 def epr(s):
     app.logger.error(s)
     if(debug):
         print s
+
 
 def dpr(s):
     app.logger.debug(s)
@@ -33,10 +36,10 @@ def make_public_blog(blog):
     for field in blog:
         if field == 'id':
             new_blog['uri'] = url_for(
-                                    'get_blog',
-                                    blog_id=blog['id'],
-                                    _external = True
-                                    )
+                'get_blog',
+                blog_id=blog['id'],
+                _external=True
+                )
         if field == '_id':
             pass
         else:
@@ -52,18 +55,21 @@ def not_found(error):
     epr("404 not found")
     return make_response(jsonify({'error': 'not found'}), 404)
 
+
 @app.errorhandler(400)
 def bad_request(error):
     return make_response(jsonify({'error': 'bad request'}), 400)
 
+
 @app.errorhandler(409)
-def bad_request(error):
+def duplicate_resource(error):
     return make_response(jsonify({'error': 'duplicate resource id'}), 409)
+
 
 @app.route('/blog/api/v1.0/blogs', methods=['GET'])
 def get_blogs():
-    blogs=[]
-    cursor=mongo.db.blogs.find()
+    blogs = []
+    cursor = mongo.db.blogs.find()
     cursor.sort("created-date", 1)
     for blog in cursor:
         dpr("Found blog {}".format(blog))
@@ -73,12 +79,13 @@ def get_blogs():
     else:
         abort(404)
 
+
 @app.route('/blog/api/v1.0/blogs', methods=['POST'])
 def create_blog():
     if not request.json:
         epr("Not request json")
         abort(400)
-    if not 'title' in request.json or not 'id' in request.json or not 'content' in request.json or not 'tags' in request.json:
+    if 'title' not in request.json or 'id' not in request.json or 'content'not in request.json or 'tags' not in request.json:
         epr("Incomplete data")
         abort(400)
     blog = {
@@ -91,7 +98,7 @@ def create_blog():
         'created-date': datetime.datetime.utcnow(),
         'author': request.json.get('author', "")
         }
-    cursor=mongo.db.blogs.find({'id': blog['id']}).limit(1)
+    cursor = mongo.db.blogs.find({'id': blog['id']}).limit(1)
     if cursor.count() > 0:
         epr("Duplicate blog id")
         abort(409)
@@ -99,9 +106,10 @@ def create_blog():
     dpr("Blog inserted")
     return jsonify({'blog': make_public_blog(blog)}), 201
 
+
 @app.route('/blog/api/v1.0/blog/<string:blog_id>', methods=['GET'])
 def get_blog(blog_id):
-    cursor=mongo.db.blogs.find()
+    cursor = mongo.db.blogs.find()
     blog = [blog for blog in cursor if blog['id'] == blog_id]
     if len(blog) == 0:
         epr("Could not find blog")
@@ -109,15 +117,16 @@ def get_blog(blog_id):
     dpr("Found blog {}".format(blog))
     return jsonify({'blog': make_public_blog(blog[0])})
 
+
 @app.route('/blog/api/v1.0/blog/<string:blog_id>', methods=['PUT'])
 def update_blog(blog_id):
-    cursor=mongo.db.blogs.find()
+    cursor = mongo.db.blogs.find()
     blog = [blog for blog in cursor if blog['id'] == blog_id]
     if len(blog) == 0:
         epr("Could not find blog with id {}".format(blog_id))
         abort(404)
     else:
-        blog=blog[0]
+        blog = blog[0]
     if not request.json:
         epr("Invalid json")
         abort(400)
@@ -151,13 +160,14 @@ def update_blog(blog_id):
             }
         }
         )
+    dpr(result)
     dpr("Updated blog id {}".format(blog_id))
     return jsonify({'blog': make_public_blog(blog)})
 
 
 @app.route('/blog/api/v1.0/blog/<string:blog_id>', methods=['DELETE'])
 def delete_blog(blog_id):
-    blog=mongo.db.blogs.find_one_or_404({'id': blog_id})
+    blog = mongo.db.blogs.find_one_or_404({'id': blog_id})
     if len(blog) == 0:
         epr("Blog with id {} not found".format(blog_id))
         abort(404)
@@ -167,7 +177,5 @@ def delete_blog(blog_id):
 
 
 if __name__ == '__main__':
-    #app.run(debug=True,host='0.0.0.0',port=6541)
-    app.run(host='0.0.0.0',port=6541)
-
-
+    app.run(host='0.0.0.0', port=6541)
+#   app.run(debug=True,host='0.0.0.0',port=6541)

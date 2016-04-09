@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 
 # Set the path
-import os, sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
+import os
+import sys
 from flask.ext.script import Manager, Server
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from blogservice import app
 
 manager = Manager(app)

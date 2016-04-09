@@ -5,6 +5,12 @@ if [[ ! -d ./venv ]];then
     mkdir ./venv
     virtualenv ./venv
 fi
+if [[ ! -d ./logs ]];then
+    mkdir ./logs
+fi
+if [[ ! -f ./logs/blogservice.log ]];then
+    touch ./logs/blogservice.log
+fi
 . venv/bin/activate
 [[ -f ./requirements.txt ]] && pip install -r ./requirements.txt
 python manage.py runserver &

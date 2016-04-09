@@ -79,6 +79,7 @@ def get_blogs():
     for blog in cursor:
         dpr("Found blog {}".format(blog))
         blogs.append(blog)
+    cursor.close()
     if len(blogs) != 0:
         return jsonify({'blogs': [make_public_blog(blog) for blog in blogs]})
     else:
@@ -106,7 +107,9 @@ def create_blog():
     cursor = mongo.db.blogs.find({'id': blog['id']}).limit(1)
     if cursor.count() > 0:
         epr("Duplicate blog id")
+        cursor.close()
         abort(409)
+    cursor.close()
     mongo.db.blogs.insert(blog)
     dpr("Blog inserted")
     return jsonify({'blog': make_public_blog(blog)}), 201
@@ -116,6 +119,7 @@ def create_blog():
 def get_blog(blog_id):
     cursor = mongo.db.blogs.find()
     blog = [blog for blog in cursor if blog['id'] == blog_id]
+    cursor.close()
     if len(blog) == 0:
         epr("Could not find blog")
         abort(404)
@@ -127,6 +131,7 @@ def get_blog(blog_id):
 def update_blog(blog_id):
     cursor = mongo.db.blogs.find()
     blog = [blog for blog in cursor if blog['id'] == blog_id]
+    cursor.close()
     if len(blog) == 0:
         epr("Could not find blog with id {}".format(blog_id))
         abort(404)

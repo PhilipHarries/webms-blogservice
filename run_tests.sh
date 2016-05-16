@@ -20,11 +20,9 @@ fi
 
 echo "Starting test instance of webserver..."
 
-./start.sh >/tmp/testserver.out.$$ 2>&1
+./start.sh 2>&1 | tee -a /tmp/testserver.out.$$ &
 
 sleep 2
-
-netstat -na | grep 5434
 
 cd tests
 

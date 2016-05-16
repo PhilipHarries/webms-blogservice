@@ -22,6 +22,10 @@ echo "Starting test instance of webserver..."
 
 ./start.sh >/tmp/testserver.out.$$ 2>&1
 
+sleep 2
+
+netstat -na | grep 5434
+
 cd tests
 
 echo "Starting test suite..."

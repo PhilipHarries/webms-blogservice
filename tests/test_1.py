@@ -5,7 +5,7 @@ localport = 5434
 
 
 def test_get_blogs():
-    r = requests.get("http://localhost:{}/blog/api/v1.0/blogs".format(localport))
+    r = requests.get("http://127.0.0.1:{}/blog/api/v1.0/blogs".format(localport))
     assert r.status_code == 200
     assert "blogs" in r.json()
     assert len(r.json()["blogs"]) > 0

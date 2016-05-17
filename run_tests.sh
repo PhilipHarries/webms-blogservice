@@ -1,4 +1,7 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash 
+
+set -v
+set -x
 
 echo "Setting up tests..."
 

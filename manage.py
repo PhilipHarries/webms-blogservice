@@ -6,7 +6,10 @@ import sys
 from flask.ext.script import Manager, Server
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from blogservice import app
+if os.path.isdir('./blogservice'):
+    from blogservice import app
+else:
+    from webms_blogservice import app
 
 manager = Manager(app)
 

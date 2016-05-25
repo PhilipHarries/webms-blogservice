@@ -5,6 +5,15 @@ localport = 5434
 
 
 def test_get_blogs():
+    payload = {
+        "description": "desc",
+        "title": "title",
+        "author": "author",
+        "content": "content",
+        "id": "test_post_blog_1",
+        "tags": "test"
+        }
+    r = requests.post("http://localhost:{}/blog/api/v1.0/blogs".format(localport), json=payload)
     r = requests.get("http://127.0.0.1:{}/blog/api/v1.0/blogs".format(localport))
     assert r.status_code == 200
     assert "blogs" in r.json()
@@ -25,7 +34,7 @@ def test_post_and_get_and_update_and_delete_blog():
         "title": "title",
         "author": "author",
         "content": "content",
-        "id": "test_post_blog",
+        "id": "test_post_blog_2",
         "tags": "test"
         }
     r = requests.post("http://localhost:{}/blog/api/v1.0/blogs".format(localport), json=payload)
@@ -33,18 +42,18 @@ def test_post_and_get_and_update_and_delete_blog():
     assert r.json()["blog"]["description"] == "desc"
     assert r.json()["blog"]["author"] == "author"
     assert r.json()["blog"]["content"] == "content"
-    assert r.json()["blog"]["id"] == "test_post_blog"
+    assert r.json()["blog"]["id"] == "test_post_blog_2"
     assert r.json()["blog"]["tags"] == "test"
     assert r.json()["blog"]["title"] == "title"
     assert "created-date" in r.json()["blog"]
     assert "last-update" in r.json()["blog"]
     assert "uri" in r.json()["blog"]
-    r = requests.get("http://localhost:{}/blog/api/v1.0/blog/test_post_blog".format(localport))
+    r = requests.get("http://localhost:{}/blog/api/v1.0/blog/test_post_blog_2".format(localport))
     assert r.status_code == 200
     assert r.json()["blog"]["description"] == "desc"
     assert r.json()["blog"]["author"] == "author"
     assert r.json()["blog"]["content"] == "content"
-    assert r.json()["blog"]["id"] == "test_post_blog"
+    assert r.json()["blog"]["id"] == "test_post_blog_2"
     assert r.json()["blog"]["tags"] == "test"
     assert r.json()["blog"]["title"] == "title"
     assert "created-date" in r.json()["blog"]
@@ -55,15 +64,15 @@ def test_post_and_get_and_update_and_delete_blog():
         "title": "title",
         "author": "author",
         "content": "new content",
-        "id": "test_post_blog",
+        "id": "test_post_blog_2",
         "tags": "test"
         }
-    r = requests.put("http://localhost:{}/blog/api/v1.0/blog/test_post_blog".format(localport), json=payload)
+    r = requests.put("http://localhost:{}/blog/api/v1.0/blog/test_post_blog_2".format(localport), json=payload)
     assert r.status_code == 200
-    r = requests.get("http://localhost:{}/blog/api/v1.0/blog/test_post_blog".format(localport))
+    r = requests.get("http://localhost:{}/blog/api/v1.0/blog/test_post_blog_2".format(localport))
     assert r.status_code == 200
     assert r.json()["blog"]["content"] == "new content"
-    r = requests.delete("http://localhost:{}/blog/api/v1.0/blog/test_post_blog".format(localport))
+    r = requests.delete("http://localhost:{}/blog/api/v1.0/blog/test_post_blog_2".format(localport))
     assert r.status_code == 200
-    r = requests.get("http://localhost:{}/blog/api/v1.0/blog/test_post_blog".format(localport))
+    r = requests.get("http://localhost:{}/blog/api/v1.0/blog/test_post_blog_2".format(localport))
     assert r.status_code == 404
